@@ -1,0 +1,43 @@
+﻿<Window x:Class="RestAb.RestAbWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:local="clr-namespace:RestAb"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" >
+  <DockPanel >
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+      <Label Content="DateTime:"/>
+      <xctk:DateTimePicker 
+                Value="{Binding Path=Time, Mode=TwoWay}"
+                Format="Custom" 
+                FormatString="MM-dd-yy hh:mm:ss"
+                TimeFormat="Custom"
+                TimeFormatString="hh:mm:ss"
+                Width="150" />
+      <Button x:Name="RunButton" Command="{Binding RunCommand, Mode=OneTime}"  Content="Run" MinWidth="100" Margin="20, 0, 0, 0"/>
+    </StackPanel>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+      <Label Content="Timestamp:" DockPanel.Dock="Left"/>
+      <TextBlock Text="{Binding Timestamp, Mode=OneWay, FallbackValue='987654'}"
+                 Margin=" 20, 0, 0, 0"  DockPanel.Dock="Left" VerticalAlignment="Center" />
+    </StackPanel>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+      <Label Content="Output Value:" DockPanel.Dock="Left"/>
+      <TextBlock Text="{Binding OutputValue, Mode=OneWay, FallbackValue='123ABC'}"
+                 Margin=" 20, 0, 0, 0"  DockPanel.Dock="Left" VerticalAlignment="Center" />
+    </StackPanel>
+    <ListView ItemsSource="{Binding Chart}" >
+      <ListView.ItemTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock FontSize="14" Text="{Binding Path=Key}" MinWidth="50" TextAlignment="Right"/>
+              <TextBlock FontSize="14" Text="{Binding Path=Value}" MinWidth="50" TextAlignment="Right"/>
+            </StackPanel>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </DockPanel>
+</Window>
