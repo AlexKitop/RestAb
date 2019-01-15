@@ -6,12 +6,13 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
         xmlns:local="clr-namespace:RestAb"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" >
+        Title="MainWindow" Height="535.5" Width="378" Loaded="Window_Loaded" >
   <DockPanel >
     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
       <Label Content="DateTime:"/>
       <xctk:DateTimePicker 
                 Value="{Binding Path=Time, Mode=TwoWay}"
+                IsReadOnly="{Binding IsReadOnly}"
                 Format="Custom" 
                 FormatString="MM-dd-yy hh:mm:ss"
                 TimeFormat="Custom"
@@ -24,20 +25,51 @@
       <TextBlock Text="{Binding Timestamp, Mode=OneWay, FallbackValue='987654'}"
                  Margin=" 20, 0, 0, 0"  DockPanel.Dock="Left" VerticalAlignment="Center" />
     </StackPanel>
-    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+    <DockPanel DockPanel.Dock="Top" >
       <Label Content="Output Value:" DockPanel.Dock="Left"/>
       <TextBlock Text="{Binding OutputValue, Mode=OneWay, FallbackValue='123ABC'}"
-                 Margin=" 20, 0, 0, 0"  DockPanel.Dock="Left" VerticalAlignment="Center" />
-    </StackPanel>
+                 TextWrapping="Wrap" 
+                 Margin=" 20, 0, 0, 0"  VerticalAlignment="Center" />
+    </DockPanel>
     <ListView ItemsSource="{Binding Chart}" >
-      <ListView.ItemTemplate>
+      <ListView.ItemContainerStyle>
+        <Style TargetType="ListViewItem">
+          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+      </ListView.ItemContainerStyle>
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Char" Width="80" >
+          <GridViewColumn.CellTemplate >
+            <DataTemplate>
+              <TextBlock Text="{Binding Key}" TextAlignment="Right" />
+            </DataTemplate>
+          </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Count" Width="100" >
+            <GridViewColumn.CellTemplate >
+              <DataTemplate>
+                <TextBlock Text="{Binding Value}" TextAlignment="Right" />
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+        </GridView>
+      </ListView.View>
+      <!--<ListView.ItemTemplate>
         <DataTemplate>
-            <StackPanel Orientation="Horizontal">
-              <TextBlock FontSize="14" Text="{Binding Path=Key}" MinWidth="50" TextAlignment="Right"/>
-              <TextBlock FontSize="14" Text="{Binding Path=Value}" MinWidth="50" TextAlignment="Right"/>
-            </StackPanel>
+          <DataTemplate.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+              <Setter Property="FontSize" Value="14"/>
+              <Setter Property="MinWidth" Value="50"/>
+              <Setter Property="TextAlignment" Value="Right"/>
+            </Style>
+          </DataTemplate.Resources>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Path=Key}"/>
+            <TextBlock Text="{Binding Path=Value}"/>
+          </StackPanel>
         </DataTemplate>
-      </ListView.ItemTemplate>
+      </ListView.ItemTemplate>-->
     </ListView>
   </DockPanel>
 </Window>

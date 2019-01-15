@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -16,7 +17,11 @@ namespace RestAb
   /// </summary>
   public class RestAbViewModel : INotifyPropertyChanged, IDisposable
   {
-    public DateTime _time = new DateTime(2013, 09, 05, 18, 45, 00);
+    const string ServerUriConfigName = "ServerUri";
+    const string RouteConfigName = "Route";
+    const string DateTime0ConfigName = "DateTime0";
+
+    public DateTime _time;
     public DateTime Time
     {
       get => _time;
@@ -25,7 +30,9 @@ namespace RestAb
         if (_time == value)
           return;
         _time = value;
-        Timestamp = null;
+        Timestamp = Helpers.TimestampStr(Time);
+        OutputValue = null;
+        Chart = null;
         OnPropertyChanged();
       }
     }
@@ -79,15 +86,22 @@ namespace RestAb
 
     public RestAbViewModel()
     {
+
+      if (DateTime.TryParse(ConfigurationManager.AppSettings[DateTime0ConfigName],
+          CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime time))
+        Time = time;
+      else
+        Time = DateTime.Now;
       Client = new Lazy<BeaconClient>(CreateClient);
+
     }
 
     private static BeaconClient CreateClient()
     {
       try
       {
-        var serverUri = ConfigurationManager.AppSettings["ServerUri"]?.ToString();
-        var route = ConfigurationManager.AppSettings["Route"]?.ToString();
+        var serverUri = ConfigurationManager.AppSettings[ServerUriConfigName];
+        var route = ConfigurationManager.AppSettings[RouteConfigName];
         return new BeaconClient(serverUri, route);
       }
       catch (Exception x)
@@ -102,9 +116,8 @@ namespace RestAb
     {
       try
       {
-        Timestamp = Helpers.TimestampStr(Time);
         _recordTask = Client.Value.GetRecordAsync(Timestamp);
-        CommandManager.InvalidateRequerySuggested();
+        EnabledRefresh();
         var record = await _recordTask;
         OutputValue = record.outputValue;
         var chart = Helpers.GetHashChart(OutputValue);
@@ -112,18 +125,27 @@ namespace RestAb
       }
       catch(Exception x)
       {
-        MessageBox.Show(x.Message);
+        MessageBox.Show(Application.Current.MainWindow, x.Message);
       }
       finally
       {
+        EnabledRefresh();
+      }
+
+      void EnabledRefresh()
+      {
+        OnPropertyChanged(nameof(IsReadOnly));
         CommandManager.InvalidateRequerySuggested();
       }
     }
 
     private bool RunCanExecute(object p)
     {
-      return _recordTask?.IsCompleted ?? true;
+      return !IsReadOnly;
     }
+
+    public bool IsReadOnly => !(_recordTask?.IsCompleted ?? true);
+
 
     #region INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;

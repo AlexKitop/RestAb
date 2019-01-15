@@ -202,3 +202,4 @@ ModelManifest.xml
 *.nupkg
 *.zip
 **/Properties/Version.cs
+_7z_src.bat
